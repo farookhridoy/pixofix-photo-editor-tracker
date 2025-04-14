@@ -16,12 +16,15 @@ class CheckPermissions
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check()) {
-            if (count($request->get('anyPermissionArray')) > 0 && !auth()->user()->anyPermissions($request->get('anyPermissionArray'))) {
-                return redirectBackWithError("Sorry! You are not authorize to visit the page!", 'dashboard');
+            $anyPermissions = (array) $request->get('anyPermissionArray', []);
+            $allPermissions = (array) $request->get('allPermissionArray', []);
+
+            if (!empty($anyPermissions) && !auth()->user()->hasAnyPermission($anyPermissions)) {
+                return redirectBackWithError("Sorry! You are not authorized to visit the page!", 'dashboard');
             }
 
-            if (count($request->get('allPermissionArray')) > 0 && !auth()->user()->allPermissions($request->get('allPermissionArray'))) {
-                return redirectBackWithError("Sorry! You are not authorize to visit the page!", 'dashboard');
+            if (!empty($allPermissions) && !auth()->user()->hasAllPermissions($allPermissions)) {
+                return redirectBackWithError("Sorry! You are not authorized to visit the page!", 'dashboard');
             }
         }
 

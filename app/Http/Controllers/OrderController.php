@@ -11,7 +11,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $pageTitle = 'Orders';
+        return view('orders.index', compact( 'pageTitle'));
     }
 
     /**

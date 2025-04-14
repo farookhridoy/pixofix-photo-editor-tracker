@@ -1,24 +1,12 @@
 <?php
 
 /**
- * @param $needle
- * @param $haystack
- * @param $option
+ * @param $option_name
  * @return bool
  */
-function checkPermission($needle, $haystack, $option)
+function isOptionPermitted($option_name)
 {
-
-    if (isset(json_decode($haystack, true)[$option])) {
-        $haystack = json_decode($haystack, true)[$option];
-        if (isset($haystack[0])) {
-            if (in_array($needle, $haystack)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return auth()->user()->can($option_name);
 }
 
 /**

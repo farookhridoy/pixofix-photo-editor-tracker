@@ -15,8 +15,9 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'order_index', 'create_order','edit_order','view_order', 'upload_files',
-            'claim_files', 'update_file_status', 'view_dashboard',
+            "claim_files", "create_order", "edit_order", "order_index", "permission_create", "permission_delete",
+            "permission_edit", "permission_index", "role_create", "role_delete", "role_edit", "role_index", "update_file_status",
+            "upload_files", "user_create", "user_delete", "user_edit", "user_index", "view_dashboard", "view_order"
         ];
 
         foreach ($permissions as $perm) {
@@ -27,9 +28,9 @@ class RolePermissionSeeder extends Seeder
             ->givePermissionTo(Permission::all());
 
         Role::firstOrCreate(['name' => 'Employee_1'])
-            ->givePermissionTo(['view_order', 'claim_files', 'update_file_status', 'upload_files']);
+            ->givePermissionTo(['view_order', 'claim_files', 'update_file_status', 'upload_files', 'view_dashboard']);
 
         Role::firstOrCreate(['name' => 'Employee_2'])
-            ->givePermissionTo(['view_order', 'claim_files', 'update_file_status']);
+            ->givePermissionTo(['view_order', 'claim_files', 'update_file_status', 'view_dashboard']);
     }
 }
