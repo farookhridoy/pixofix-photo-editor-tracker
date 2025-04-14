@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-slot name="pageTitle">
+        {{$pageTitle}}
+    </x-slot>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Users Management') }}
@@ -28,14 +31,14 @@
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach($users as $user)
                         <tr>
-                            <td class="px-4text-gray-600  py-2 whitespace-nowrap">{{ ($users->currentPage() - 1) *
+                            <td class="px-4 text-white py-2 whitespace-nowrap">{{ ($users->currentPage() - 1) *
                             $users->perPage() + $loop->iteration }}</td>
                             <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $user->name }}</td>
                             <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $user->email }}</td>
                             <td class="px-4 text-white py-2 whitespace-nowrap">
                                 @foreach($user->getRoleNames() as $role)
                                     <span
-                                        class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                            class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
                                         <i class="fa fa-user-tag mr-1"></i> {{ $role }}
                                     </span>
                                 @endforeach
