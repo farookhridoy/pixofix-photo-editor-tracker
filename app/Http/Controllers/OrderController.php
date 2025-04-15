@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessOrderFolder;
 use App\Models\Order;
+use App\Models\OrderFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use ZipArchive;
 
 class OrderController extends Controller
 {
@@ -23,9 +28,11 @@ class OrderController extends Controller
      */
     public function create()
     {
+        $pageTitle = 'Create Order';
         $prefix = '#ORD-' . date('y', strtotime(date('Y-m-d'))) . '-';
         $sku = uniqueCode(14, $prefix, 'orders', 'id');
 
+        return view('orders.create', compact('sku', 'pageTitle'));
     }
 
     /**
@@ -33,15 +40,36 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'folder' => 'required'
+        ]);
+
+        $order = Order::create($request->only('title', 'description', 'order_number', 'status'));
+
+        $tempPath = 'temp/' . uniqid();
+        $request->file('folder')->storeAs($tempPath, '', 'temp');
+
+        ProcessOrderFolder::dispatch($order, $tempPath);
+
+        return redirect()->route('orders.show', $order);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Order $order)
     {
-        //
+        return view('orders.show', [
+            'order' => $order->load('files'),
+            'activities' => $order->activities()->latest()->get()
+        ]);
+    }
+
+    public function approve(Order $order)
+    {
+        $order->update(['status' => 'completed']);
+        return redirect()->route('orders.index');
     }
 
     /**
