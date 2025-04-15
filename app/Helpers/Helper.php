@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+
 /**
  * @param $option_name
  * @return bool
@@ -101,3 +103,21 @@ function humanReadableTime($time)
     return (isset($explode[0]) && $explode[0] > 0 ? ' ' . (int)($explode[0]) . 'h' : '') . (isset($explode[1]) && $explode[1] > 0 ? ' ' . (int)($explode[1]) . 'm' : '') . (isset($explode[2]) && $explode[2] > 0 ? ' ' . (int)($explode[2]) . 's' : '');
 }
 
+/**
+ * @param $length
+ * @param $prefix
+ * @param $table
+ * @param $field
+ * @return string
+ */
+function uniqueCode($length, $prefix, $table, $field)
+{
+    $prefix_length = strlen($prefix);
+    $max_id = DB::table($table)->count($field);
+    $new = (int)($max_id);
+    $new++;
+    $number_of_zero = $length - $prefix_length - strlen($new);
+    $zero = str_repeat("0", $number_of_zero);
+    $made_id = $prefix . $zero . $new;
+    return $made_id;
+}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -12,7 +13,9 @@ class OrderController extends Controller
     public function index()
     {
         $pageTitle = 'Orders';
-        return view('orders.index', compact( 'pageTitle'));
+        $orders = Order::with(['files', 'admin'])->paginate(20);
+
+        return view('orders.index', compact('pageTitle', 'orders'));
     }
 
     /**
@@ -20,7 +23,9 @@ class OrderController extends Controller
      */
     public function create()
     {
-        //
+        $prefix = '#ORD-' . date('y', strtotime(date('Y-m-d'))) . '-';
+        $sku = uniqueCode(14, $prefix, 'orders', 'id');
+
     }
 
     /**
@@ -43,6 +48,11 @@ class OrderController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
+    {
+        //
+    }
+
+    public function fileUploads(string $id)
     {
         //
     }

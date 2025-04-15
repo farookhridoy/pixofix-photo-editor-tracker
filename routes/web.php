@@ -51,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('permission:user_index|user_create|user_edit');
     //Order controller
     Route::resource('/orders', OrderController::class);
+    Route::get('orders/file/upload/{order}', [OrderController::class, 'fileUploads'])->name('orders.file.upload');
 });
 
 require __DIR__ . '/auth.php';
