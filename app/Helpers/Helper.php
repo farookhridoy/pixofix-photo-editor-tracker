@@ -107,6 +107,9 @@ function humanReadableTime($time)
 function getProgressAttribute($order)
 {
     $fileCount = $order->files->count();
+    if ($fileCount<=0){
+        return 0;
+    }
     $completeFiles = $order->files->where('status', 'completed')->count();
 
     return round(($completeFiles / $fileCount) * 100, 2);
