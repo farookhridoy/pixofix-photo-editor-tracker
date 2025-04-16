@@ -33,11 +33,6 @@ class Order extends Model implements HasMedia
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function getProgressAttribute()
-    {
-        return round(($this->completed_files_count / $this->files_count) * 100, 2);
-    }
-
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('original_files')

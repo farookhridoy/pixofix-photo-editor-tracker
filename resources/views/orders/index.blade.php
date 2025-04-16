@@ -39,15 +39,15 @@
                             <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $order->title }}</td>
                             <td class="px-4 text-white  py-2 whitespace-nowrap">{{ ucfirst($order->status) }}</td>
                             <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $order->files? $order->files->count():0 }}</td>
-                            <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $order->admin?$oder->admin->name:'' }}</td>
+                            <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $order->admin?$order->admin->name:'' }}</td>
                             <td class="px-4 py-2 whitespace-nowrap text-right">
                                 <a href="{{ route('orders.edit', $order) }}"
                                    class="text-indigo-600 hover:text-indigo-900 mr-2" title="Edit">
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <a href="{{ route('orders.file.upload', $order) }}"
+                                <a href="{{ route('orders.show', $order) }}"
                                    class="text-indigo-600 hover:text-indigo-900 mr-2" title="Edit">
-                                    <i class="fa fa-cloud-upload"></i>
+                                    <i class="fa fa-eye"></i>
                                 </a>
                                 <form action="{{ route('orders.destroy', $order) }}" method="POST" class="inline-block"
                                       onsubmit="return confirm('Are you sure to delete this user?');">

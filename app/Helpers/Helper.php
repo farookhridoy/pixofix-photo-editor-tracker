@@ -103,6 +103,15 @@ function humanReadableTime($time)
     return (isset($explode[0]) && $explode[0] > 0 ? ' ' . (int)($explode[0]) . 'h' : '') . (isset($explode[1]) && $explode[1] > 0 ? ' ' . (int)($explode[1]) . 'm' : '') . (isset($explode[2]) && $explode[2] > 0 ? ' ' . (int)($explode[2]) . 's' : '');
 }
 
+
+function getProgressAttribute($order)
+{
+    $fileCount = $order->files->count();
+    $completeFiles = $order->files->where('status', 'completed')->count();
+
+    return round(($completeFiles / $fileCount) * 100, 2);
+}
+
 /**
  * @param $length
  * @param $prefix
@@ -120,4 +129,17 @@ function uniqueCode($length, $prefix, $table, $field)
     $zero = str_repeat("0", $number_of_zero);
     $made_id = $prefix . $zero . $new;
     return $made_id;
+}
+
+function fileUpload($filedata, $folderName)
+{
+
+    $fileType = $filedata->getClientOriginalExtension();
+    $fileName = rand(1, 1000) . date('dmyhis') . "." . $fileType;
+    $path2 = $folderName;
+    if (!file_exists(public_path($path2))) {
+        mkdir(public_path($path2), 0777, true);
+    }
+    $img = $filedata->move(public_path($path2), $fileName);
+    return $photoUploadedPath = $path2 . '/' . $fileName;
 }

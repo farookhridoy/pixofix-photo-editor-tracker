@@ -9,7 +9,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProcessOrderFolder implements ShouldQueue
@@ -19,7 +21,8 @@ class ProcessOrderFolder implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Order $order, public string $tempPath) {
+    public function __construct(public Order $order, public string $tempPath)
+    {
 
     }
 
@@ -30,21 +33,34 @@ class ProcessOrderFolder implements ShouldQueue
     {
         $files = Storage::disk('temp')->allFiles($this->tempPath);
 
-        foreach ($files as $filePath) {
-            $relativePath = str_replace("{$this->tempPath}/", '', $filePath);
+        DB::beginTransaction();
 
-            Storage::disk('original')->put(
-                "{$this->order->id}/{$relativePath}",
-                Storage::disk('temp')->get($filePath)
-            );
+        try {
+            foreach ($files as $filePath) {
+                $relativePath = str_replace("{$this->tempPath}/", '', $filePath);
+                $targetPath = "{$this->order->order_number}/original/{$relativePath}";
 
-            OrderFile::create([
+                // Copy to public disk (use the 'public' disk instead of 'original')
+                $content = Storage::disk('temp')->get($filePath);
+                Storage::disk('public')->put($targetPath, $content);
+
+                OrderFile::create([
+                    'order_id' => $this->order->id,
+                    'filename' => basename($filePath),
+                    'filepath' => $targetPath,
+                ]);
+            }
+
+            DB::commit();
+
+            Storage::disk('temp')->deleteDirectory($this->tempPath);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            //log or notify error
+            Log::error('Failed to process order files', [
                 'order_id' => $this->order->id,
-                'filename' => 'N/A',
-                'filepath' => $relativePath
+                'error' => $e->getMessage(),
             ]);
         }
-
-        Storage::disk('temp')->deleteDirectory($this->tempPath);
     }
 }

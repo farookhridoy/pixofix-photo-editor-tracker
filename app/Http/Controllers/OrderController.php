@@ -6,6 +6,7 @@ use App\Jobs\ProcessOrderFolder;
 use App\Models\Order;
 use App\Models\OrderFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use ZipArchive;
@@ -29,7 +30,7 @@ class OrderController extends Controller
     public function create()
     {
         $pageTitle = 'Create Order';
-        $prefix = '#ORD-' . date('y', strtotime(date('Y-m-d'))) . '-';
+        $prefix = 'ORD-' . date('y', strtotime(date('Y-m-d'))) . '-';
         $sku = uniqueCode(14, $prefix, 'orders', 'id');
 
         return view('orders.create', compact('sku', 'pageTitle'));
@@ -42,17 +43,31 @@ class OrderController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'folder' => 'required'
+            'folder' => 'required|array',
+            'folder.*' => 'file'
         ]);
 
-        $order = Order::create($request->only('title', 'description', 'order_number', 'status'));
+        DB::beginTransaction();
 
-        $tempPath = 'temp/' . uniqid();
-        $request->file('folder')->storeAs($tempPath, '', 'temp');
+        try {
 
-        ProcessOrderFolder::dispatch($order, $tempPath);
+            $order = Order::create($request->only('title', 'description', 'order_number', 'status'));
 
-        return redirect()->route('orders.show', $order);
+            $tempPath = 'temp/' . $order->order_number;
+
+            foreach ($request->file('folder') as $uploadedFile) {
+                $relativePath = $uploadedFile->getClientOriginalName();
+                $uploadedFile->storeAs($tempPath, $relativePath, 'temp');
+            }
+
+            ProcessOrderFolder::dispatch($order, $tempPath);
+
+            DB::commit();
+            return redirect()->route('orders.show', $order);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return backWithError($ex->getMessage());
+        }
     }
 
     /**
@@ -60,10 +75,14 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return view('orders.show', [
+        $data = [
             'order' => $order->load('files'),
-            'activities' => $order->activities()->latest()->get()
-        ]);
+            'activities' => $order->activities()->latest()->get(),
+            'pageTitle' => 'Order View',
+            'progress' => getProgressAttribute($order)
+        ];
+
+        return view('orders.show', $data);
     }
 
     public function approve(Order $order)

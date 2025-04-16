@@ -76,16 +76,16 @@
         </div>
     </div>
 
-    @section('javascript')
-        <script>
-            const r = new Resumable({
-                target: '/upload-chunk',
-                chunkSize: 10*1024*1024, // 10MB
-                simultaneousUploads: 4,
-                testChunks: true
-            });
+{{--    @section('javascript')--}}
+{{--        <script>--}}
+{{--            const r = new Resumable({--}}
+{{--                target: '/upload-chunk',--}}
+{{--                chunkSize: 10*1024*1024, // 10MB--}}
+{{--                simultaneousUploads: 4,--}}
+{{--                testChunks: true--}}
+{{--            });--}}
 
-            r.assignBrowse(document.getElementById('resumable-browse'));
-        </script>
-    @endsection
+{{--            r.assignBrowse(document.getElementById('resumable-browse'));--}}
+{{--        </script>--}}
+{{--    @endsection--}}
 </x-app-layout>

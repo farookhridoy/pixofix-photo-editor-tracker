@@ -59,12 +59,12 @@ return [
 
         'original' => [
             'driver' => 'local',
-            'root' => storage_path('app/original'),
+            'root' => storage_path('app/public/original'),
         ],
 
         'processed' => [
             'driver' => 'local',
-            'root' => storage_path('app/processed'),
+            'root' => storage_path('app/public/processed'),
         ],
 
         'temp' => [
