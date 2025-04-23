@@ -36,14 +36,24 @@ class ProcessOrderFolder implements ShouldQueue
         DB::beginTransaction();
 
         try {
+            // Fetch a category path
+            $category = $this->order->category;
+            $pathSlug = $category->getPathSlugs();
+
             foreach ($files as $filePath) {
                 $relativePath = str_replace("{$this->tempPath}/", '', $filePath);
-                $targetPath = "{$this->order->order_number}/original/{$relativePath}";
 
-                // Copy to public disk (use the 'public' disk instead of 'original')
+                // Build a full path using slugs
+                $targetPath = "uploads/{$pathSlug}/{$this->order->order_number}/original/{$relativePath}";
+
+                // Store to public disk (you can change to s3 if needed)
                 $content = Storage::disk('temp')->get($filePath);
                 Storage::disk('public')->put($targetPath, $content);
 
+                //For AWS bucket if needed to upload on cloud
+                //Storage::disk('s3')->put($targetPath, $content, 'public');
+
+                // Save metadata
                 OrderFile::create([
                     'order_id' => $this->order->id,
                     'filename' => basename($filePath),
@@ -53,10 +63,12 @@ class ProcessOrderFolder implements ShouldQueue
 
             DB::commit();
 
+            // Clean up
             Storage::disk('temp')->deleteDirectory($this->tempPath);
+
         } catch (\Throwable $e) {
             DB::rollBack();
-            //log or notify error
+
             Log::error('Failed to process order files', [
                 'order_id' => $this->order->id,
                 'error' => $e->getMessage(),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\ProfileController;
@@ -49,9 +50,18 @@ Route::middleware(['auth'])->group(function () {
     //Setup Users
     Route::resource('/users', UsersController::class)
         ->middleware('permission:user_index|user_create|user_edit');
+
     //Order controller
+    Route::resource('/categories', CategoriesController::class);
+
     Route::resource('/orders', OrderController::class);
-    Route::get('orders/file/upload/{order}', [OrderController::class, 'fileUploads'])->name('orders.file.upload');
+
+    Route::get('orders/file/upload/{order}', [OrderController::class, 'fileUploads'])
+        ->name('orders.file.upload');
+
+    Route::delete('orders/file/destroy/{order}', [OrderController::class, 'fileDelete'])
+        ->name('order.file.destroy');
+
 });
 
 require __DIR__ . '/auth.php';

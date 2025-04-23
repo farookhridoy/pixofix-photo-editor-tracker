@@ -18,6 +18,7 @@ class Order extends Model implements HasMedia
     protected $table = 'orders';
     protected $fillable = [
         'order_number',
+        'category_id',
         'title',
         'description',
         'status',
@@ -28,9 +29,14 @@ class Order extends Model implements HasMedia
         return $this->hasMany(OrderFile::class);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
     public function admin()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 
     public function registerMediaCollections(): void

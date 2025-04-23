@@ -17,7 +17,8 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             "claim_files", "create_order", "edit_order", "order_index", "permission_create", "permission_delete",
             "permission_edit", "permission_index", "role_create", "role_delete", "role_edit", "role_index", "update_file_status",
-            "upload_files", "user_create", "user_delete", "user_edit", "user_index", "view_dashboard", "view_order"
+            "upload_files", "user_create", "user_delete", "user_edit", "user_index", "view_dashboard", "view_order",
+            "category_create", "category_delete", "category_edit", "category_index",
         ];
 
         foreach ($permissions as $perm) {

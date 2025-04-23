@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ProcessOrderFolder;
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
 
@@ -32,8 +34,8 @@ class OrderController extends Controller
         $pageTitle = 'Create Order';
         $prefix = 'ORD-' . date('y', strtotime(date('Y-m-d'))) . '-';
         $sku = uniqueCode(14, $prefix, 'orders', 'id');
-
-        return view('orders.create', compact('sku', 'pageTitle'));
+        $categoryOptions = Category::treeList();
+        return view('orders.create', compact('sku', 'pageTitle', 'categoryOptions'));
     }
 
     /**
@@ -44,6 +46,7 @@ class OrderController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'folder' => 'required|array',
+            'category_id' => 'required|exists:categories,id',
             'folder.*' => 'file'
         ]);
 
@@ -51,7 +54,7 @@ class OrderController extends Controller
 
         try {
 
-            $order = Order::create($request->only('title', 'description', 'order_number', 'status'));
+            $order = Order::create($request->all());
 
             $tempPath = 'temp/' . $order->order_number;
 
@@ -76,7 +79,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $data = [
-            'order' => $order->load('files'),
+            'order' => $order->load('files', 'category'),
             'activities' => $order->activities()->latest()->get(),
             'pageTitle' => 'Order View',
             'progress' => getProgressAttribute($order)
@@ -94,9 +97,10 @@ class OrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Order $order)
     {
-        //
+        $categoryOptions = Category::treeList();
+        unset($categoryOptions[$order->category_id]);
     }
 
     public function fileUploads(string $id)
@@ -115,8 +119,50 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $order = Order::whereHas('files', function ($query) use ($id) {
+            $query->where('status', 'unclaimed');
+        })->findOrFail($id);
+
+        DB::beginTransaction();
+
+        try {
+            // Delete associated files from public storage
+            foreach ($order->files as $file) {
+                if (Storage::disk('public')->exists($file->filepath)) {
+                    Storage::disk('public')->delete($file->filepath);
+                }
+            }
+
+            // Delete the folder structure
+            $folderPath = "{$order->order_number}/original";
+            if (Storage::disk('public')->exists($folderPath)) {
+                Storage::disk('public')->deleteDirectory("{$order->order_number}");
+            }
+
+            // Delete related database records
+            $order->files()->delete();
+            $order->delete();
+
+            DB::commit();
+
+            return redirect()->route('orders.index')->with('success', 'Order and associated files deleted.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return back()->with('error', 'Failed to delete order: ' . $e->getMessage());
+        }
+    }
+
+    public function fileDelete(string $id)
+    {
+        $file = OrderFile::where('id', $id)->where('status', 'unclaimed')->first();
+        try {
+            $file->delete();
+            return back()->with('success', 'Order File deleted.');
+        } catch (\Exception $ex) {
+            return backWithError($ex->getMessage());
+        }
     }
 }

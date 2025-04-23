@@ -15,6 +15,11 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @if(isOptionPermitted('category_index'))
+                        <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.index')">
+                            {{ __('Category') }}
+                        </x-nav-link>
+                    @endif
                     @if(isOptionPermitted('order_index'))
                         <x-nav-link :href="route('orders.index')" :active="request()->routeIs('orders.index')">
                             {{ __('Orders') }}
@@ -100,12 +105,34 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('orders.index')">
-                {{ __('Orders') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('users.index')">
-                {{ __('Users') }}
-            </x-responsive-nav-link>
+
+            @if(isOptionPermitted('category_index'))
+                <x-responsive-nav-link :href="route('categories.index')"
+                                       :active="request()->routeIs('categories.index')">
+                    {{ __('Category') }}
+                </x-responsive-nav-link>
+            @endif
+            @if(isOptionPermitted('order_index'))
+                <x-responsive-nav-link :href="route('orders.index')">
+                    {{ __('Orders') }}
+                </x-responsive-nav-link>
+            @endif
+            @if(isOptionPermitted('user_index'))
+                <x-responsive-nav-link :href="route('users.index')">
+                    {{ __('Users') }}
+                </x-responsive-nav-link>
+            @endif
+            @if(isOptionPermitted('role_index'))
+                <x-responsive-nav-link :href="route('roles.index')">
+                    {{ __('Roles') }}
+                </x-responsive-nav-link>
+            @endif
+            @if(isOptionPermitted('permission_index'))
+                <x-responsive-nav-link :href="route('permissions.index')">
+                    {{ __('Permissions') }}
+                </x-responsive-nav-link>
+            @endif
+
         </div>
 
         <!-- Responsive Settings Options -->

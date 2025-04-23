@@ -45,13 +45,14 @@
                                 {{ ucfirst($file->status) }}
                             </td>
                             <td class="px-4 py-2 whitespace-nowrap text-right">
-                                {{--                                <form action="{{ route('roles.destroy', $role) }}" method="POST" class="inline">--}}
-                                {{--                                    @csrf @method('DELETE')--}}
-                                <button class="text-red-600 hover:text-red-800"
-                                        onclick="return confirm('Are you sure?')">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                                {{--                                </form>--}}
+                                <form action="{{ route('order.file.destroy', $file->id) }}" method="POST"
+                                      class="inline">
+                                    @csrf @method('DELETE')
+                                    <button class="text-red-600 hover:text-red-800"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
