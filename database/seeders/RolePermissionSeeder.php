@@ -26,7 +26,9 @@ class RolePermissionSeeder extends Seeder
         }
 
         Role::firstOrCreate(['name' => 'Admin'])
-            ->givePermissionTo(Permission::all());
+            ->givePermissionTo(Permission::whereNotIn('name', [
+                "employee_order_index", "employee_order_edit", "employee_order_lock_file", "employee_order_claim_batch", "employee_my_batch_index", "update_file_status"
+            ])->all());
 
         Role::firstOrCreate(['name' => 'Employee_1'])
             ->givePermissionTo(['view_order', 'claim_files', 'update_file_status', 'view_dashboard', "employee_order_index", "employee_order_edit", "employee_order_lock_file", "employee_order_claim_batch", "employee_my_batch_index",]);

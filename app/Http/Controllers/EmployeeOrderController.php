@@ -122,12 +122,21 @@ class EmployeeOrderController extends Controller
         ]);
     }
 
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
     public function edit($id)
     {
         $file = OrderFile::findOrFail($id);
         return response()->json($file);
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
     public function update(Request $request, $id)
     {
         $file = OrderFile::find($id);

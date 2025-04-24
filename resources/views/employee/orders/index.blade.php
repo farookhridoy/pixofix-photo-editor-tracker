@@ -40,7 +40,7 @@
                                 </a>
 
                                 <a href="{{ route('employee-orders.my.batch', $order) }}"
-                                   class="text-green-600 hover:text-green-900 mr-2" title="My Orders">
+                                   class="text-green-600 hover:text-green-900 mr-2" title="My Files">
                                     <i class="fa fa-list"></i>
                                 </a>
                             </td>
