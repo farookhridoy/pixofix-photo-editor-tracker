@@ -90,7 +90,6 @@
                 }
             });
         });
-
     </script>
 </x-app-layout>
 

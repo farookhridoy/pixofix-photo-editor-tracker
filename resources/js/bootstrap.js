@@ -43,4 +43,14 @@ window.Echo.channel(`order`)
                 checkbox.disabled = true;
             }
         }
+    })
+    .listen('FileUnlocked', (e) => {
+        const card = document.querySelector(`#file-${e.id}`);
+        if (card) {
+            card.classList.remove('opacity-50');
+            const checkbox = card.querySelector('.claim-checkbox');
+            if (checkbox) {
+                checkbox.disabled = false;
+            }
+        }
     });

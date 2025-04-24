@@ -4,11 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Events\FileLocked;
 use App\Models\Order;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeOrderController extends Controller
 {
+    /**
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
     public function index()
     {
         $pageTitle = 'Orders';
@@ -19,6 +27,10 @@ class EmployeeOrderController extends Controller
         return view('employee.orders.index', compact('pageTitle', 'orders'));
     }
 
+    /**
+     * @param $id
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
+     */
     public function show($id)
     {
         $order = Order::with(['files', 'admin'])->findOrFail($id);
@@ -32,6 +44,11 @@ class EmployeeOrderController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     */
     public function lockFile(Request $request, $id)
     {
         $request->validate([
@@ -56,6 +73,11 @@ class EmployeeOrderController extends Controller
         return response()->json(['locked' => false]);
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return RedirectResponse
+     */
     public function claimBatch(Request $request, $id)
     {
         $request->validate([
@@ -63,14 +85,15 @@ class EmployeeOrderController extends Controller
             'file_id.*' => 'exists:order_files,id',
         ]);
 
-        $order = Order::with(['files', 'admin'])->findOrFail($id);
+        DB::beginTransaction();
+        try {
+            $order = Order::with(['files', 'admin'])->findOrFail($id);
 
-        $files = $order->files()
-            ->whereIn('id', $request->file_id)
-            ->where('status', 'unclaimed')
-            ->get();
+            $files = $order->files()
+                ->whereIn('id', $request->file_id)
+                ->where('status', 'unclaimed')
+                ->get();
 
-        DB::transaction(function () use ($files) {
             $files->each->update([
                 'status' => 'claimed',
                 'claimed_by' => auth()->id(),
@@ -78,9 +101,14 @@ class EmployeeOrderController extends Controller
                 'locked_by' => null,
                 'locked_at' => null,
             ]);
-        });
 
-        return backWithError('File has been claimed');
+            DB::commit();
+
+            return backWithSuccess('File has been claimed successfully');
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return backWithError($ex->getMessage());
+        }
     }
 
 

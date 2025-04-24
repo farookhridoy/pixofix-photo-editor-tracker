@@ -52,10 +52,11 @@ This Laravel-based web application is built to manage production orders containi
 5. **Run the Server**
    ```bash
    php artisan serve
+   php artisan schedule:work //for runing unlocked file
    ```
 
 6. **Setup WebSockets (Optional)**
-   - Install and configure [Soketi](https://docs.soketi.app/)
+   - Create an account in pusher
    - Update `.env` with `BROADCAST_DRIVER=pusher` and related keys.
 
 ## 🧪 Dummy Credentials for Testing
@@ -77,10 +78,10 @@ This Laravel-based web application is built to manage production orders containi
 
 ## 📌 Future Enhancements
 
-- 📂 Drag-and-drop folder uploads
-- 🔍 AI error detection in images
-- 🖥 Adobe Creative Cloud API Integration
-- 📦 Batch downloading of completed files
+- Multiple image uploads
+- Using file lock for 2 min after that automatically unlocked the file
+- 
+- 
 
 ## ✅ Contribution & Evaluation Checklist
 
