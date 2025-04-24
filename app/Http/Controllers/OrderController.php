@@ -79,7 +79,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $data = [
-            'order' => $order->load('files', 'category'),
+            'order' => $order->load('files.claimedBy', 'category'),
             'activities' => $order->activities()->latest()->get(),
             'pageTitle' => 'Order View',
             'progress' => getProgressAttribute($order)

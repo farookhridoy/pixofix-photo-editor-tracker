@@ -30,7 +30,7 @@ class OrderFile extends Model
 
     public function claimedBy()
     {
-        return $this->belongsTo(User::class, 'claimed_by');
+        return $this->belongsTo(User::class, 'claimed_by', 'id');
     }
 
     public function getActivitylogOptions(): LogOptions

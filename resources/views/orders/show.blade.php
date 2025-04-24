@@ -30,6 +30,7 @@
                         <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">File Name</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">File</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">Status</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-600 dark:text-gray-300">Claimed By</th>
                         <th class="px-4 py-3 text-right font-medium text-gray-600 dark:text-gray-300">Actions</th>
                     </tr>
                     </thead>
@@ -44,6 +45,7 @@
                             <td class="px-4 text-white py-2 whitespace-nowrap">
                                 {{ ucfirst($file->status) }}
                             </td>
+                            <td class="px-4 text-white py-2 whitespace-nowrap">{{ optional($file->claimedBy)->name }}</td>
                             <td class="px-4 py-2 whitespace-nowrap text-right">
                                 <form action="{{ route('order.file.destroy', $file->id) }}" method="POST"
                                       class="inline">
@@ -62,13 +64,4 @@
         </div>
     </div>
 </x-app-layout>
-{{--<script>--}}
-{{--    window.Echo.channel('order-progress')--}}
-{{--        .listen('FileCompleted', (data) => {--}}
-{{--            if (data.order_id === {{ $order->id }}) {--}}
-{{--                window.dispatchEvent(new CustomEvent('progress-update', {--}}
-{{--                    detail: {progress: data.progress}--}}
-{{--                }));--}}
-{{--            }--}}
-{{--        });--}}
-{{--</script>--}}
+

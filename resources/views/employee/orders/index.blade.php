@@ -38,6 +38,11 @@
                                    class="text-indigo-600 hover:text-indigo-900 mr-2" title="Show Orders">
                                     <i class="fa fa-eye"></i>
                                 </a>
+
+                                <a href="{{ route('employee-orders.my.batch', $order) }}"
+                                   class="text-green-600 hover:text-green-900 mr-2" title="My Orders">
+                                    <i class="fa fa-list"></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach

@@ -10,6 +10,12 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex justify-end mb-4">
+                <a href="{{ route('employee-orders.index') }}"
+                   class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                    <i class="fa fa-list mr-2"></i> Orders
+                </a>
+            </div>
             <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                 @php
                     $unclaimed = $order->files->where('status', 'unclaimed')->sortBy('filename');

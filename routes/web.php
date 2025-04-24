@@ -36,35 +36,56 @@ Route::middleware(['auth'])->group(function () {
 
     //Setup Role
     Route::resource('roles', RoleController::class)
-        ->middleware('permission:role_index |role_create| role_edit');
+        ->middleware('permission:role_index |role_create| role_edit|role_delete');
     //Setup Permissions
     Route::get('permissions', [PermissionsController::class, 'index'])
         ->name('permissions.index')
         ->middleware('permission:permission_index');
-    Route::post('permissions', [PermissionsController::class, 'store'])->name('permissions.store');
+
+    Route::post('permissions', [PermissionsController::class, 'store'])
+        ->name('permissions.store')
+        ->middleware('permission:permission_create');
+
     Route::get('permissions/{permission}', [PermissionsController::class, 'show'])
-        ->name('permissions.show');
+        ->name('permissions.show')
+        ->middleware("permission:permission_show");
+
     Route::put('permissions/{permission}', [PermissionsController::class, 'update'])
-        ->name('permissions.update');
+        ->name('permissions.update')
+        ->middleware('permission:permission_edit');
+
     Route::delete('permissions/{permission}', [PermissionsController::class, 'destroy'])
-        ->name('permissions.destroy');
+        ->name('permissions.destroy')
+        ->middleware('permission:permission_delete');
     //Setup Users
     Route::resource('/users', UsersController::class)
-        ->middleware('permission:user_index|user_create|user_edit');
+        ->middleware('permission:user_index|user_create|user_edit|user_delete');
 
     //Order controller
-    Route::resource('categories', CategoriesController::class);
-    Route::resource('orders', OrderController::class);
+    Route::resource('categories', CategoriesController::class)
+        ->middleware('permission:category_index|category_create|category_edit');
+
+    Route::resource('orders', OrderController::class)
+        ->middleware('permission:order_index|order_create|order_edit|order_delete');
+
     Route::delete('orders/file/destroy/{order}', [OrderController::class, 'fileDelete'])
-        ->name('order.file.destroy');
+        ->name('order.file.destroy')->middleware('permission:order_delete');
 
     //Employee Order Controller
-    Route::resource('employee-orders', EmployeeOrderController::class);
+    Route::resource('employee-orders', EmployeeOrderController::class)
+        ->middleware('permission:employee_order_index|employee_order_edit');
+
     Route::post('employee-orders/{order}/lock-file', [EmployeeOrderController::class, 'lockFile'])
-        ->name('employee-orders.lock.file');
+        ->name('employee-orders.lock.file')
+        ->middleware('permission:employee_order_lock_file');
 
     Route::post('employee-orders/claim-batch/{order}', [EmployeeOrderController::class, 'claimBatch'])
-        ->name('employee-orders.claim.batch');
+        ->name('employee-orders.claim.batch')
+        ->middleware('permission:employee_order_claim_batch');
+
+    Route::get('employee-orders/my-batch/{order}', [EmployeeOrderController::class, 'myBatchIndex'])
+        ->name('employee-orders.my.batch')
+        ->middleware('permission:employee_my_batch_index');
 
 });
 
