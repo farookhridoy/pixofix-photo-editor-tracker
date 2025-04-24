@@ -41,6 +41,12 @@
                             {{ __('Permissions') }}
                         </x-nav-link>
                     @endif
+
+                    @if(isOptionPermitted('claim_files'))
+                        <x-nav-link :href="route('employee-orders.index')" :active="request()->routeIs('employee-orders.index')">
+                            {{ __('Orders') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 

@@ -45,9 +45,9 @@ class OrderController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'folder' => 'required|array',
             'category_id' => 'required|exists:categories,id',
-            'folder.*' => 'file'
+            'folder' => 'required|array',
+            'folder.*' => 'file|mimes:jpg,jpeg,png,gif,webp,bmp,svg'
         ]);
 
         DB::beginTransaction();
@@ -99,21 +99,56 @@ class OrderController extends Controller
      */
     public function edit(Order $order)
     {
+        $pageTitle = 'Edit Order';
         $categoryOptions = Category::treeList();
         unset($categoryOptions[$order->category_id]);
-    }
 
-    public function fileUploads(string $id)
-    {
-        //
+        return view('orders.edit', compact('pageTitle', 'categoryOptions', 'order'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Order $order)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'folder' => 'nullable|array',
+            'folder.*' => 'file|mimes:jpg,jpeg,png,gif,webp,bmp,svg'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Update the order details
+            $order->update([
+                'title' => $request->input('title'),
+                'category_id' => $request->input('category_id'),
+                'description' => $request->input('description'),
+                'status' => $request->input('status'),
+            ]);
+
+            // If new files are uploaded
+            if ($request->hasFile('folder')) {
+                $tempPath = 'temp/' . $order->order_number;
+
+                foreach ($request->file('folder') as $uploadedFile) {
+                    $relativePath = $uploadedFile->getClientOriginalName();
+                    $uploadedFile->storeAs($tempPath, $relativePath, 'temp');
+                }
+
+                // Dispatch job to re-process folder
+                ProcessOrderFolder::dispatch($order, $tempPath);
+            }
+
+            DB::commit();
+
+            return redirectBackWithSuccess('Order updated successfully!', 'orders.index');
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return backWithError('Something went wrong: ' . $ex->getMessage());
+        }
     }
 
     /**

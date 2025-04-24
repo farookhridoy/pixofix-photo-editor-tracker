@@ -107,7 +107,7 @@ function humanReadableTime($time)
 function getProgressAttribute($order)
 {
     $fileCount = $order->files->count();
-    if ($fileCount<=0){
+    if ($fileCount <= 0) {
         return 0;
     }
     $completeFiles = $order->files->where('status', 'completed')->count();
@@ -145,4 +145,23 @@ function fileUpload($filedata, $folderName)
     }
     $img = $filedata->move(public_path($path2), $fileName);
     return $photoUploadedPath = $path2 . '/' . $fileName;
+}
+
+function orderStatus($type = 'order')
+{
+    if ($type == 'files') {
+        $status = [
+            'unclaimed' => 'Unclaimed',
+            'claimed' => 'Claimed',
+            'in_progress' => 'In Progress',
+            'completed' => 'Completed',
+        ];
+    } else {
+        $status = [
+            'pending' => 'Pending',
+            'in_progress' => 'In Progress',
+            'completed' => 'Completed',
+        ];
+    }
+    return $status;
 }

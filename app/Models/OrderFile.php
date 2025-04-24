@@ -19,6 +19,8 @@ class OrderFile extends Model
         'category',
         'status',
         'claimed_by',
+        'locked_by',
+        'locked_at'
     ];
 
     public function order()

@@ -76,7 +76,20 @@
                         <div class="text-sm text-red-500 mt-1">{{ $message }}</div>
                         @enderror
                     </div>
-
+                    <div class="mb-4">
+                        <label class="block font-medium text-sm text-gray-700 dark:text-gray-200" for="status">
+                            Status</label>
+                        <select name="status"
+                                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                            @foreach(orderStatus() as $key=> $status)
+                                <option
+                                    value="{{ $key }}"
+                                    {{ old('status', $order->status ?? '') == $key ? 'selected' : '' }}>
+                                    {{ $status }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="flex justify-end">
                         <a href="{{ route('orders.index') }}"
                            class="text-sm text-gray-600 hover:underline dark:text-gray-300 mr-4">Cancel</a>

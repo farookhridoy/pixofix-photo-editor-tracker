@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\EmployeeOrderController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\ProfileController;
@@ -52,15 +53,18 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('permission:user_index|user_create|user_edit');
 
     //Order controller
-    Route::resource('/categories', CategoriesController::class);
-
-    Route::resource('/orders', OrderController::class);
-
-    Route::get('orders/file/upload/{order}', [OrderController::class, 'fileUploads'])
-        ->name('orders.file.upload');
-
+    Route::resource('categories', CategoriesController::class);
+    Route::resource('orders', OrderController::class);
     Route::delete('orders/file/destroy/{order}', [OrderController::class, 'fileDelete'])
         ->name('order.file.destroy');
+
+    //Employee Order Controller
+    Route::resource('employee-orders', EmployeeOrderController::class);
+    Route::post('employee-orders/{order}/lock-file', [EmployeeOrderController::class, 'lockFile'])
+        ->name('employee-orders.lock.file');
+
+    Route::post('employee-orders/claim-batch/{order}', [EmployeeOrderController::class, 'claimBatch'])
+        ->name('employee-orders.claim.batch');
 
 });
 
