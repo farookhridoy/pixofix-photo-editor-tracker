@@ -1,7 +1,7 @@
-
 # 📸 Pixofix - Laravel Developer Evaluation Assignment
 
-This Laravel-based web application is built to manage production orders containing hundreds of image files. It enables employees to claim and work on batches of files with real-time tracking and ensures that no duplication of work occurs.
+This Laravel-based web application is built to manage production orders containing hundreds of image files. It enables
+employees to claim and work on batches of files with real-time tracking and ensures that no duplication of work occurs.
 
 ## 🚀 Features
 
@@ -16,11 +16,13 @@ This Laravel-based web application is built to manage production orders containi
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Laravel 11 (or latest stable version)
+- **Framework**: Laravel 10.10
 - **Database**: MySQL
 - **Frontend**: Blade (Breeze), Alpine.js, Tailwind CSS
-- **Real-time**: Laravel Echo + Pusher / Soketi
+- **Real-time**: Laravel Echo + Pusher
 - **Version Control**: GitHub
+- **PHP**: 8.1
+- **Local Server**: laragon/xampp
 
 ## ⚙️ Installation Instructions
 
@@ -56,18 +58,18 @@ This Laravel-based web application is built to manage production orders containi
    ```
 
 6. **Setup WebSockets**
-   - Create an account in pusher
-   - Update `.env` with `BROADCAST_DRIVER=pusher` and related keys.
+    - Create an account in pusher
+    - Update `.env` with `BROADCAST_DRIVER=pusher` and related keys.
 
 ## 🧪 Dummy Credentials for Testing
 
 - **Admin**
-  - Email: `admin@pixofix.com`
-  - Password: `password`
+    - Email: `admin@pixofix.com`
+    - Password: `password`
 
 - **Employee**
-  - Email: `employee@pixofix.com`
-  - Password: `password`
+    - Email: `employee@pixofix.com`
+    - Password: `password`
 
 ## 📁 Project Structure Highlights
 
@@ -79,9 +81,10 @@ This Laravel-based web application is built to manage production orders containi
 ## 📌 Future Enhancements
 
 - Multiple image uploads
-- Using file lock for 2 min after that automatically unlocked the file
-- 
-- 
+- Using file lock for 2 min after that automatically unlocked the file
+- Realtime progress
+- Interactive Dashboard
+- Realtime employee activity tracking
 
 ## ✅ Contribution & Evaluation Checklist
 
@@ -95,6 +98,55 @@ This Laravel-based web application is built to manage production orders containi
 - [x] Permission Management
 - [ ] Optional: Photoshop/Illustrator Integration
 - [ ] Optional: AI Error Detection
+
+### 📸 UI Screenshots
+
+#### 📜 Admin Dashboard
+
+An overview dashboard for admin showing order-related metrics such as total, completed, employee wise chart, order wise
+chart, and ongoing orders.
+
+![Category Management](public/project-snapshot/admin_dashboard.png)
+
+#### 📜 User & ACL Management
+
+This interface allows admins to manage users, roles, permissions. You can add, edit, or delete these from a centralized
+panel.
+
+![User & ACL Management](public/project-snapshot/admin_index.png)
+
+#### 📜 Category Management
+
+This interface allows admins to manage categories. You can add, edit, or delete categories from a centralized panel.
+
+![Category Management](public/project-snapshot/category_index.png)
+
+#### 📜 Order Management
+
+This interface allows admins to manage orders. You can add, edit, or delete orders from a centralized panel.
+
+![Order Management](public/project-snapshot/order_create.png)
+
+#### Realtime order state show
+
+![Realtime Order State](public/project-snapshot/realtime_order_progress.png)
+
+#### 📜 Employee Dashboard
+
+An overview dashboard for employees showing order-related metrics such as total, completed, and ongoing orders.
+
+![Employee Dashboard](public/project-snapshot/employee_dashboard.png)
+
+#### 📜 Employee Order Management
+
+This interface allows employee to manage orders. You can update status of a claimed file, do batch wise claimed, locked
+file from this centralized panel.
+
+![Employee Order Management](public/project-snapshot/employee_order_state.png)
+
+#### Order Wise File Page
+
+![Order Wise File Page](public/project-snapshot/order_wise_file_state.png)
 
 ## 📄 License
 

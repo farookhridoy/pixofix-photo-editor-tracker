@@ -1,4 +1,5 @@
 <x-app-layout>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <x-slot name="pageTitle">
         {{$pageTitle}}
     </x-slot>
@@ -38,6 +39,7 @@
                                 <tr class="text-left border-b">
                                     <th class="px-4 py-2">Name</th>
                                     <th class="px-4 py-2">Claimed</th>
+                                    <th class="px-4 py-2">In Progress</th>
                                     <th class="px-4 py-2">Completed</th>
                                 </tr>
                                 </thead>
@@ -46,6 +48,7 @@
                                     <tr class="border-b">
                                         <td class="px-4 py-2">{{ $employee['name'] }}</td>
                                         <td class="px-4 py-2">{{ $employee['claimed_count'] }}</td>
+                                        <td class="px-4 py-2">{{ $employee['in_progress_count'] }}</td>
                                         <td class="px-4 py-2">{{ $employee['completed_count'] }}</td>
                                     </tr>
                                 @endforeach
@@ -59,14 +62,63 @@
                             <canvas id="employeeChart" height="120"></canvas>
                         </div>
                     @endif
+
+                    @if (auth()->user()->hasRole('Admin'))
+                        <div class="mt-10">
+                            <h2 class="text-xl font-bold mb-4">Order Status Charts</h2>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                @foreach ($orders as $order)
+                                    @php
+                                        $statusCounts = $order->files->groupBy('status')->map->count();
+                                    @endphp
+                                    <div class="bg-white rounded shadow p-4">
+                                        <h3 class="text-md font-semibold mb-2 text-black">Order
+                                                                                          #{{ $order->order_number }}</h3>
+                                        <canvas id="orderChart{{ $order->id }}" height="200"></canvas>
+                                        <script>
+                                            const ctx{{ $order->id }} = document.getElementById('orderChart{{ $order->id }}').getContext('2d');
+                                            new Chart(ctx{{ $order->id }}, {
+                                                type: 'doughnut',
+                                                data: {
+                                                    labels: ['Unclaimed', 'Claimed', 'In Progress', 'Completed'],
+                                                    datasets: [{
+                                                        label: 'Status',
+                                                        data: [
+                                                            {{ $statusCounts['unclaimed'] ?? 0 }},
+                                                            {{ $statusCounts['claimed'] ?? 0 }},
+                                                            {{ $statusCounts['in_progress'] ?? 0 }},
+                                                            {{ $statusCounts['completed'] ?? 0 }},
+                                                        ],
+                                                        backgroundColor: [
+                                                            '#f59e0b', '#3b82f6', '#ec4899', '#10b981'
+                                                        ]
+                                                    }]
+                                                },
+                                                options: {
+                                                    responsive: true,
+                                                    plugins: {
+                                                        legend: {
+                                                            position: 'bottom'
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        </script>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4">
+                                {{ $orders->links() }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
     @section('javascript')
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             const ctx = document.getElementById('employeeChart').getContext('2d');
 

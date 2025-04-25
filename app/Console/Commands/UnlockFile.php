@@ -41,6 +41,8 @@ class UnlockFile extends Command
             ]);
 
             event(new \App\Events\FileUnlocked($file));
+
+            fileLogGenerate($file->id, 'unlocked', 'Lock expired or released');
         }
 
         $this->info("Unlocked {$files->count()} files.");

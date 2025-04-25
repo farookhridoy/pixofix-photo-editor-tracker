@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderFile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -63,7 +64,11 @@ class OrderController extends Controller
                 $uploadedFile->storeAs($tempPath, $relativePath, 'temp');
             }
 
+            //dispatch the order file
             ProcessOrderFolder::dispatch($order, $tempPath);
+
+            //forget the admin dashboard cache
+            Cache::forget('admin_dashboard_data');
 
             DB::commit();
             return redirect()->route('orders.show', $order);
@@ -138,9 +143,12 @@ class OrderController extends Controller
                     $uploadedFile->storeAs($tempPath, $relativePath, 'temp');
                 }
 
-                // Dispatch job to re-process folder
+                // dispatch a job to re-process folder
                 ProcessOrderFolder::dispatch($order, $tempPath);
             }
+
+            //forget the admin dashboard cache
+            Cache::forget('admin_dashboard_data');
 
             DB::commit();
 
@@ -180,6 +188,9 @@ class OrderController extends Controller
             $order->files()->delete();
             $order->delete();
 
+            //forget the admin dashboard cache
+            Cache::forget('admin_dashboard_data');
+
             DB::commit();
 
             return redirect()->route('orders.index')->with('success', 'Order and associated files deleted.');
@@ -195,6 +206,10 @@ class OrderController extends Controller
         $file = OrderFile::where('id', $id)->where('status', 'unclaimed')->first();
         try {
             $file->delete();
+
+            //forget the admin dashboard cache
+            Cache::forget('admin_dashboard_data');
+
             return back()->with('success', 'Order File deleted.');
         } catch (\Exception $ex) {
             return backWithError($ex->getMessage());

@@ -11,8 +11,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Validator;
+use Mockery\Exception;
 
 class EmployeeOrderController extends Controller
 {
@@ -36,6 +38,7 @@ class EmployeeOrderController extends Controller
     public function show($id)
     {
         $order = Order::with(['files', 'admin'])->findOrFail($id);
+
         return view('employee.orders.show', [
             'pageTitle' => 'Order Show',
             'order' => $order
@@ -66,7 +69,12 @@ class EmployeeOrderController extends Controller
             'locked_at' => now(),
         ]);
 
+        //broadcast file locked
         broadcast(new FileLocked($file))->toOthers();
+
+        //generate log
+        fileLogGenerate($file->id, 'locked', 'Temporary lock due to activity');
+
 
         return response()->json(['locked' => false]);
     }
@@ -83,8 +91,8 @@ class EmployeeOrderController extends Controller
             'file_id.*' => 'exists:order_files,id',
         ]);
 
-        DB::beginTransaction();
-        try {
+//        DB::beginTransaction();
+//        try {
             $order = Order::with(['files', 'admin'])->findOrFail($id);
 
             $files = $order->files()
@@ -100,13 +108,19 @@ class EmployeeOrderController extends Controller
                 'locked_at' => null,
             ]);
 
+            //generate log
+            fileLogGenerate($files->pluck('id')->toArray(), 'claimed', 'File claimed for editing');
+
             DB::commit();
+            //forget the admin dashboard cache
+            Cache::forget('admin_dashboard_data');
+
 
             return backWithSuccess('File has been claimed successfully');
-        } catch (\Exception $ex) {
-            DB::rollBack();
-            return backWithError($ex->getMessage());
-        }
+//        } catch (\Exception $ex) {
+//            DB::rollBack();
+//            return backWithError($ex->getMessage());
+//        }
     }
 
     public function myBatchIndex($id)
@@ -139,9 +153,26 @@ class EmployeeOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $file = OrderFile::find($id);
-        $file->update(['status' => $request->status]);
-        return response()->json(['success' => true, 'message' => 'Status has been updated']);
+        $request->validate([
+            'status' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $file = OrderFile::find($id);
+            $file->update(['status' => $request->status]);
+
+            //generate log
+            fileLogGenerate($file->id, $request->status, 'Update File Status as ' . $request->status);
+            //forget the admin dashboard cache
+            Cache::forget('admin_dashboard_data');
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Status has been updated']);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['error' => $ex->getMessage()]);
+        }
     }
 
 }

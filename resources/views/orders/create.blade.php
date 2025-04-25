@@ -63,13 +63,11 @@
                     </div>
                     <div class="mb-4" id="upload-container">
                         <label class="block font-medium text-sm text-gray-700 dark:text-gray-200" for="folder">
-                            Choose Files
+                            Choose Images (You can choose multiple images)
                         </label>
                         <input name="folder[]"
                                id="folder"
                                multiple
-                               webkitdirectory
-                               directory
                                type="file"
                                class="block mt-1 w-full"/>
                         @error('folder')

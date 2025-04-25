@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\FileLog;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -164,4 +166,29 @@ function orderStatus($type = 'order')
         ];
     }
     return $status;
+}
+
+
+/**
+ * @param $orderFileIds
+ * @param $action
+ * @param $notes
+ * @return void
+ */
+function fileLogGenerate($orderFileIds, $action, $notes = null)
+{
+    $orderFileIds = is_array($orderFileIds) ? $orderFileIds : [$orderFileIds];
+
+    $userId = Auth::id();
+    if (!$userId) return;
+
+    foreach ($orderFileIds as $orderFileId) {
+        FileLog::create([
+            'order_file_id' => $orderFileId,
+            'user_id' => $userId,
+            'action' => $action,
+            'notes' => $notes,
+        ]);
+    }
+    return;
 }
