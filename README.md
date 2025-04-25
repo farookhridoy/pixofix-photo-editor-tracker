@@ -55,7 +55,7 @@ This Laravel-based web application is built to manage production orders containi
    php artisan schedule:work //for runing unlocked file
    ```
 
-6. **Setup WebSockets (Optional)**
+6. **Setup WebSockets**
    - Create an account in pusher
    - Update `.env` with `BROADCAST_DRIVER=pusher` and related keys.
 
