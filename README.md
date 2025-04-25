@@ -77,6 +77,10 @@ employees to claim and work on batches of files with real-time tracking and ensu
 - `resources/views` – Blade templates for Auth, Dashboard, File Management
 - `routes/web.php` – Route definitions
 - `database/seeders` – Roles, Permissions, Dummy Users
+- `app/Console/Commands` – Scheduler Command
+- `app/Events` – FileLocked, Unlocked Events
+- `app/Jobs` – Bulk file upload job
+- `resources/js/bootstrap.js` – Pusher setup and functionality
 
 ## 📌 Future Enhancements
 
