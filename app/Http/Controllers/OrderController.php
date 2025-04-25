@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\ProcessOrderFolder;
 use App\Models\Category;
+use App\Models\FileLog;
 use App\Models\Order;
 use App\Models\OrderFile;
 use Illuminate\Http\Request;
@@ -85,7 +86,6 @@ class OrderController extends Controller
     {
         $data = [
             'order' => $order->load('files.claimedBy', 'category'),
-            'activities' => $order->activities()->latest()->get(),
             'pageTitle' => 'Order View',
             'progress' => getProgressAttribute($order)
         ];
@@ -214,5 +214,15 @@ class OrderController extends Controller
         } catch (\Exception $ex) {
             return backWithError($ex->getMessage());
         }
+    }
+
+    public function orderLogs($id)
+    {
+        return view('orders.orderLogs', [
+            'pageTitle' => 'Order Logs',
+            'fieLogs' => FileLog::with(['file.order', 'user'])->whereHas('file.order', function ($query) use ($id) {
+                $query->where('id', $id);
+            })->latest()->paginate(20)
+        ]);
     }
 }

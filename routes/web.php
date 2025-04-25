@@ -71,6 +71,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('orders/file/destroy/{order}', [OrderController::class, 'fileDelete'])
         ->name('order.file.destroy')->middleware('permission:order_delete');
 
+    Route::get('orders/logs/{order}', [OrderController::class, 'orderLogs'])
+        ->name('orders.logs')->middleware('permission:order_index');
+
     //Employee Order Controller
     Route::resource('employee-orders', EmployeeOrderController::class)
         ->middleware('permission:employee_order_index|employee_order_edit');

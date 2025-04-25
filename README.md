@@ -124,12 +124,17 @@ This interface allows admins to manage categories. You can add, edit, or delete 
 #### 📜 Order Management
 
 This interface allows admins to manage orders. You can add, edit, or delete orders from a centralized panel.
+![Order Management](public/project-snapshot/order_index.png)
 
 ![Order Management](public/project-snapshot/order_create.png)
 
 #### Realtime order state show
 
 ![Realtime Order State](public/project-snapshot/realtime_order_progress.png)
+
+#### Order Wise File Logs
+
+![Order Wise File Logs](public/project-snapshot/logs.png)
 
 #### 📜 Employee Dashboard
 

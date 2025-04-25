@@ -16,7 +16,6 @@ class OrderFile extends Model
         'order_id',
         'filename',
         'filepath',
-        'category',
         'status',
         'claimed_by',
         'locked_by',

@@ -19,7 +19,7 @@ class FileLog extends Model
 
     public function file()
     {
-        return $this->belongsTo(OrderFile::class);
+        return $this->belongsTo(OrderFile::class, 'order_file_id', 'id');
     }
 
     public function user()

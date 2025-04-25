@@ -42,7 +42,7 @@
                             <td class="px-4 text-white  py-2 whitespace-nowrap">{{ $order->admin?$order->admin->name:'' }}</td>
                             <td class="px-4 py-2 whitespace-nowrap text-right">
                                 <a href="{{ route('orders.edit', $order) }}"
-                                   class="text-indigo-600 hover:text-indigo-900 mr-2" title="Edit">
+                                   class="text-green-300 hover:text-green-300 mr-2" title="Edit">
                                     <i class="fa fa-edit"></i>
                                 </a>
                                 <a href="{{ route('orders.show', $order) }}"
@@ -53,10 +53,15 @@
                                       onsubmit="return confirm('Are you sure to delete this user?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Delete">
+                                    <button type="submit" class="text-red-600 hover:text-red-800 mr-2" title="Delete">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </form>
+
+                                <a href="{{ route('orders.logs', $order) }}"
+                                   class="text-blue-400 hover:text-blue-400 mr-2" title="Order Logs">
+                                    <i class="fa fa-clipboard-list"></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach
