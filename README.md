@@ -48,7 +48,9 @@ employees to claim and work on batches of files with real-time tracking and ensu
 
 4. **Run Migrations & Seeders**
    ```bash
-   php artisan migrate --seed
+   php artisan migrate
+   
+   php artisan db:seed
    ```
 
 5. **Run the Server**
