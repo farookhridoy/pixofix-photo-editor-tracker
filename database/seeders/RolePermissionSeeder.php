@@ -12,7 +12,7 @@ class RolePermissionSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run()
     {
         $permissions = [
             "claim_files", "create_order", "edit_order", "order_index", "order_delete", "permission_create", "permission_delete",
@@ -27,8 +27,8 @@ class RolePermissionSeeder extends Seeder
 
         Role::firstOrCreate(['name' => 'Admin'])
             ->givePermissionTo(Permission::whereNotIn('name', [
-                "employee_order_index", "employee_order_edit", "employee_order_lock_file", "employee_order_claim_batch", "employee_my_batch_index", "update_file_status"
-            ])->all());
+                "employee_order_index", "employee_order_edit", "employee_order_lock_file", "employee_order_claim_batch", "employee_my_batch_index", "update_file_status",'claim_files'
+            ])->get());
 
         Role::firstOrCreate(['name' => 'Employee_1'])
             ->givePermissionTo(['view_order', 'claim_files', 'update_file_status', 'view_dashboard', "employee_order_index", "employee_order_edit", "employee_order_lock_file", "employee_order_claim_batch", "employee_my_batch_index",]);
